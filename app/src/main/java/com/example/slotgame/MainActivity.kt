@@ -2,10 +2,12 @@ package com.example.slotgame
 
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.example.slotgame.adapter.SlotGameAdapter
 import com.example.slotgame.databinding.ActivityMainBinding
 import com.example.slotgame.model.ImageGame
@@ -18,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     private var mAdapter1: SlotGameAdapter? = null
     private var mAdapter2: SlotGameAdapter? = null
     private var mAdapter3: SlotGameAdapter? = null
+    private var mResultRow1: Int? = null
+    private var mResultRow2: Int? = null
+    private var mResultRow3: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,42 +37,6 @@ class MainActivity : AppCompatActivity() {
         setAdapter(listData, 1)
         setAdapter(listData, 2)
         setAdapter(listData, 3)
-        binding.btnStart.setOnClickListener {
-            val linearSmoothScroller1: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 200f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller1.targetPosition = Random.nextInt(6)
-
-            val linearSmoothScroller2: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 300f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller2.targetPosition = Random.nextInt(6)
-
-            val linearSmoothScroller3: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 400f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller3.targetPosition = Random.nextInt(6)
-
-
-            (binding.listImgFirst.layoutManager as LinearLayoutManager).startSmoothScroll(
-                linearSmoothScroller1
-            )
-            (binding.listImgSecond.layoutManager as LinearLayoutManager).startSmoothScroll(
-                linearSmoothScroller2
-            )
-            (binding.listImgThird.layoutManager as LinearLayoutManager).startSmoothScroll(
-                linearSmoothScroller3
-            )
-        }
     }
 
     private fun setListener() {
@@ -78,10 +47,59 @@ class MainActivity : AppCompatActivity() {
         binding.listImgThird.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+        binding.btnStart.setOnClickListener {
+            mResultRow1 = Random.nextInt(6)
+            mResultRow2 = Random.nextInt(5)
+            mResultRow3 = Random.nextInt(4)
 
+            val linearSmoothScroller1: LinearSmoothScroller =
+                object : LinearSmoothScroller(this) {
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                        return 200f / displayMetrics.densityDpi
+                    }
+                }
+            linearSmoothScroller1.targetPosition = mResultRow1!!
+
+            val linearSmoothScroller2: LinearSmoothScroller =
+                object : LinearSmoothScroller(this) {
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                        return 300f / displayMetrics.densityDpi
+                    }
+                }
+            linearSmoothScroller2.targetPosition = mResultRow2!!
+
+            val linearSmoothScroller3: LinearSmoothScroller =
+                object : LinearSmoothScroller(this) {
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                        return 400f / displayMetrics.densityDpi
+                    }
+                }
+            linearSmoothScroller3.targetPosition = mResultRow3!!
+
+            (binding.listImgFirst.layoutManager as LinearLayoutManager).startSmoothScroll(
+                linearSmoothScroller1
+            )
+            (binding.listImgSecond.layoutManager as LinearLayoutManager).startSmoothScroll(
+                linearSmoothScroller2
+            )
+            (binding.listImgThird.layoutManager as LinearLayoutManager).startSmoothScroll(
+                linearSmoothScroller3
+            )
+
+            binding.listImgThird.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        checkResult()
+                        return
+                    }
+                }
+            })
+        }
     }
 
     private fun mockData() {
+
         listData = ArrayList()
         listData?.apply {
             add(ImageGame(R.drawable.bar, 1))
@@ -138,4 +156,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun checkResult() {
+        if (mResultRow1 == mResultRow2 && mResultRow2 == mResultRow3) {
+            Toast.makeText(this, "You Win", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "You Lost", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
