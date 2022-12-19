@@ -8,17 +8,17 @@
     tools:context=".MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_img_first"
+        android:id="@+id/recyclerview_first"
         android:layout_width="100dp"
         android:layout_height="300dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_img_second"
+        android:id="@+id/recyclerview_second"
         android:layout_width="100dp"
         android:layout_height="300dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_img_third"
+        android:id="@+id/recyclerview_third"
         android:layout_width="100dp"
         android:layout_height="300dp" />
 

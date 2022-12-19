@@ -3,6 +3,7 @@ package com.example.slotgame.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.slotgame.R
@@ -28,7 +29,7 @@ class SlotGameAdapter :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is GameViewHolder) {
-            mDataList?.get(position)?.let { holder.bindData(it) }
+            mDataList?.get(position)?.let { holder.bindData(it, position) }
         }
     }
 
@@ -41,13 +42,9 @@ class SlotGameAdapter :
 
     inner class GameViewHolder(var itemSlotGameBinding: ItemSlotGameBinding) :
         RecyclerView.ViewHolder(itemSlotGameBinding.root) {
-        fun bindData(imageGame: ImageGame) {
+        fun bindData(imageGame: ImageGame, position: Int?) {
             itemSlotGameBinding.imgFirst.background =
-                ContextCompat.getDrawable(context, R.drawable.bar)
-            itemSlotGameBinding.imgSecond.background =
-                ContextCompat.getDrawable(context, R.drawable.lemon)
-            itemSlotGameBinding.imgThird.background =
-                ContextCompat.getDrawable(context, R.drawable.cherry)
+                imageGame.img?.let { ContextCompat.getDrawable(context, it) }
         }
     }
 }
