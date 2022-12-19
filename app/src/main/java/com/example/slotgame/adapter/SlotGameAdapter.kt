@@ -3,10 +3,8 @@ package com.example.slotgame.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.slotgame.R
 import com.example.slotgame.databinding.ItemSlotGameBinding
 import com.example.slotgame.model.ImageGame
 
@@ -45,6 +43,9 @@ class SlotGameAdapter :
         fun bindData(imageGame: ImageGame, position: Int?) {
             itemSlotGameBinding.imgFirst.background =
                 imageGame.img?.let { ContextCompat.getDrawable(context, it) }
+
         }
     }
+
+
 }
