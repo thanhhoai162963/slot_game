@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -20,14 +19,14 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var listData: ArrayList<ImageGame>? = null
+    private var mListData: ArrayList<ImageGame>? = null
     private var mAdapter1: SlotGameAdapter? = null
     private var mAdapter2: SlotGameAdapter? = null
     private var mAdapter3: SlotGameAdapter? = null
     private var mResult1: Int? = null
     private var mResult2: Int? = null
     private var mResult3: Int? = null
-    private var mTime1: Float? = null
+    private var mScore: Int? = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +39,9 @@ class MainActivity : AppCompatActivity() {
         setListener()
         mockData()
 
-        setAdapter(listData, 1)
-        setAdapter(listData, 2)
-        setAdapter(listData, 3)
+        setAdapter(mListData, 1)
+        setAdapter(mListData, 2)
+        setAdapter(mListData, 3)
     }
 
     private fun setListener() {
@@ -96,37 +95,46 @@ class MainActivity : AppCompatActivity() {
 
             })
         }
+        binding.recyclerviewThird.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.d("bbb123", "da dừng lại")
+                    result()
+                }
+            }
+        })
 
+        val linearSmoothScroller1: LinearSmoothScroller =
+            object : LinearSmoothScroller(this) {
+                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                    return 200f / displayMetrics.densityDpi
+                }
+            }
+        val linearSmoothScroller2: LinearSmoothScroller =
+            object : LinearSmoothScroller(this) {
+                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                    return 300f / displayMetrics.densityDpi
+                }
+            }
+        val linearSmoothScroller3: LinearSmoothScroller =
+            object : LinearSmoothScroller(this) {
+                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                    return 400f / displayMetrics.densityDpi
+                }
+            }
         binding.btnStart.setOnClickListener {
             val positionFirst = Random.nextInt(11)
             val positionSecond = Random.nextInt(10)
             val positionThird = Random.nextInt(9)
 
-            val linearSmoothScroller1: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 200f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller1.targetPosition = 3
+            linearSmoothScroller1.targetPosition = positionFirst
             mResult1 = linearSmoothScroller1.targetPosition
 
-            val linearSmoothScroller2: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 300f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller2.targetPosition = 3
+            linearSmoothScroller2.targetPosition = positionSecond
             mResult2 = linearSmoothScroller2.targetPosition
 
-            val linearSmoothScroller3: LinearSmoothScroller =
-                object : LinearSmoothScroller(this) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 400f / displayMetrics.densityDpi
-                    }
-                }
-            linearSmoothScroller3.targetPosition = 3
+            linearSmoothScroller3.targetPosition = positionThird
             mResult3 = linearSmoothScroller3.targetPosition
 
             (binding.recyclerviewFirst.layoutManager as LinearLayoutManager).startSmoothScroll(
@@ -139,20 +147,11 @@ class MainActivity : AppCompatActivity() {
                 linearSmoothScroller3
             )
         }
-        binding.recyclerviewThird.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.d("bbb123", "da dừng lại")
-                    result()
-                }
-            }
-        })
     }
 
     private fun mockData() {
-        listData = ArrayList()
-        listData?.apply {
+        mListData = ArrayList()
+        mListData?.apply {
             add(ImageGame(R.drawable.bar, 1))
             add(ImageGame(R.drawable.lemon, 2))
             add(ImageGame(R.drawable.cherry, 3))
@@ -202,15 +201,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun result() {
-        Log.d("ccc123", mResult1.toString())
-        Log.d("ccc123", mResult2.toString())
-        Log.d("ccc123", mResult3.toString())
-
         if (mResult1 == mResult2 && mResult2 == mResult3) {
-            Toast.makeText(this, "cong diem", Toast.LENGTH_SHORT).show()
+            mScore = mScore?.plus(10)
+            binding.txtResult.text = "Score: ${mScore?.plus(50)}"
         } else {
-            Toast.makeText(this, "trừ diem", Toast.LENGTH_SHORT).show()
+            mScore = mScore?.minus(10)
+            binding.txtResult.text = "Score: ${mScore?.minus(10)}"
         }
     }
 
